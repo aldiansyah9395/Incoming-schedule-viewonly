@@ -136,7 +136,9 @@ table.dataTable tbody tr:hover {
 /* Responsiveness */
 .table-wrapper {
   overflow-x: auto;
+  margin-top: 10px;
 }
+
 
 /* Table Cell Spacing */
 table.dataTable thead th,
@@ -149,7 +151,7 @@ table.dataTable tbody td {
   font-size: 28px;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 10px; /* Sudah sesuai */
   position: relative;
 }
 
@@ -165,9 +167,9 @@ table.dataTable tbody td {
 
 .clock-container {
   text-align: center;
+  margin-top: 15px;
   margin-bottom: 5px;
 }
-
 .digital-clock {
   font-size: 36px;
   font-weight: bold;
