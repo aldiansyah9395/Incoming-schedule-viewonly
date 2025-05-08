@@ -38,13 +38,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const parts = dateStr.split("/");
   if (parts.length !== 3) return dateStr;
 
-  const day = parts[0];
-  const month = parseInt(parts[1]) - 1; // Bulan dimulai dari 0
-  const year = parts[2];
-  const dateObj = new Date(year, month, day);
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const year = parseInt(parts[2], 10);
 
-  const options = { day: 'numeric', month: 'short', year: '2-digit' };
-  return dateObj.toLocaleDateString('en-US', options).replace(",", "").replace(/\s/g, "-");
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const shortYear = year.toString().slice(-2);
+  return `${day}-${monthNames[month]}-${shortYear}`;
 }
 
   function renderRow(row, index, id) {
