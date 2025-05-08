@@ -1,17 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
   const table = $("#containerTable").DataTable();
-  const baseId = "appxekctFAWmMVFzc";
-  const tableName = "data-cont";
-  const token = "Bearer patiH2AOAO9YAtJhA.61cafc7228a34200466c4235f324b0a9368cf550d04e83656db17d3374ec35d4";
 
-  const csvInput = document.getElementById("csvFile");
-  const uploadBtn = document.getElementById("uploadBtn");
-  const uploadStatus = document.getElementById("uploadStatus");
+  // Konfigurasi Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBYdbo6du0u3ZxT53lFEXpNccPwTu8czN4",
+    authDomain: "incoming-schedule-monitoring.firebaseapp.com",
+    projectId: "incoming-schedule-monitoring",
+    storageBucket: "incoming-schedule-monitoring.firebasestorage.app",
+    messagingSenderId: "460704037681",
+    appId: "1:460704037681:web:311d272b7ca9250f130e10",
+    databaseURL: "https://incoming-schedule-monitoring-default-rtdb.asia-southeast1.firebasedatabase.app/"
+  };
 
-  function showStatus(message, type = "info") {
-    uploadStatus.textContent = message;
-    uploadStatus.className = `status ${type}`;
-  }
+  // Inisialisasi Firebase
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
 
   function getStatusProgress(timeIn, unloadingTime, finish) {
     timeIn = typeof timeIn === 'string' ? timeIn.trim() : (timeIn ? String(timeIn).trim() : "");
@@ -63,7 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
         <td class="status-progress" data-status="${status}">
           <span class="label label-${status.toLowerCase()}">${status}</span>
         </td>
-        
         <td>${timeIn}</td>
         <td>${unloadingTime}</td>
         <td>${finish}</td>
@@ -71,28 +73,29 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
   }
 
-  function loadAirtableData() {
-    fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}?pageSize=100`, {
-      headers: { Authorization: token }
-    })
-      .then(res => res.json())
-      .then(data => {
+  function loadFirebaseData() {
+    const ref = database.ref('incoming_schedule'); // ✅ Perbaikan path
+
+    ref.once('value')
+      .then(snapshot => {
+        const data = snapshot.val();
         table.clear();
 
-        data.records.forEach((record, i) => {
-          const html = renderRow(record.fields, i, record.id);
+        let index = 0;
+        for (const id in data) {
+          const row = data[id];
+          const html = renderRow(row, index++, id);
           if (html) table.row.add($(html));
-        });
+        }
 
         table.draw();
       })
-      .catch(err => console.error("❌ Gagal ambil data dari Airtable:", err));
+      .catch(err => console.error("❌ Gagal ambil data dari Firebase:", err));
   }
 
-  loadAirtableData();
+  // Load data dari Firebase saat halaman siap
+  loadFirebaseData();
 
-  setInterval(() => {
-    console.log('Refreshing data...');
-    loadAirtableData();
-  }, 5000);
+  // Optional: auto-refresh data setiap 30 detik
+  // setInterval(loadFirebaseData, 30000);
 });
