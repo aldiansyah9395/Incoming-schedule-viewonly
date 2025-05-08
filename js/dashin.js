@@ -33,6 +33,20 @@ document.addEventListener("DOMContentLoaded", function () {
     return "";
   }
 
+  function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const parts = dateStr.split("/");
+  if (parts.length !== 3) return dateStr;
+
+  const day = parts[0];
+  const month = parseInt(parts[1]) - 1; // Bulan dimulai dari 0
+  const year = parts[2];
+  const dateObj = new Date(year, month, day);
+
+  const options = { day: 'numeric', month: 'short', year: '2-digit' };
+  return dateObj.toLocaleDateString('en-US', options).replace(",", "").replace(/\s/g, "-");
+}
+
   function renderRow(row, index, id) {
     if (!row || !row["FEET"] || !row["PACKAGE"]) return "";
 
@@ -62,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>${p40}</td>
         <td>${row["INVOICE NO"] || ""}</td>
         <td>${row["PACKAGE"] || ""}</td>
-        <td>${row["INCOMING PLAN"] || ""}</td>
+        <td>${formatDate(row["INCOMING PLAN"])}</td>
         <td class="status-progress" data-status="${status}">
           <span class="label label-${status.toLowerCase()}">${status}</span>
         </td>
